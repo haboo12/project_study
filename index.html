@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For better study 📚</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* 다크 모드 스타일 */
+        body.dark-mode {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+        body.dark-mode .header {
+            background-color: #34495e;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .header .logo {
+            color: #8aff8a;
+        }
+        body.dark-mode .search-section,
+        body.dark-mode .video-item,
+        body.dark-mode .modal-content,
+        body.dark-mode .post-item,
+        body.dark-mode .comment-item,
+        body.dark-mode .recommended-content-section { /* 추천 컨텐츠 섹션 추가 */
+            background-color: #34495e;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .search-section h2,
+        body.dark-mode .modal-header h3,
+        body.dark-mode .video-item .details h3,
+        body.dark-mode .post-item h4,
+        body.dark-mode #viewPostContent h3,
+        body.dark-mode .comments-section h4,
+        body.dark-mode .recommended-content-section h2 { /* 추천 컨텐츠 섹션 제목 추가 */
+            color: #8aff8a; /* 밝은 녹색 */
+        }
+        body.dark-mode .search-bar input,
+        body.dark-mode #chatInput,
+        body.dark-mode #communitySearchQuery,
+        body.dark-mode #postTitle,
+        body.dark-mode #postContent,
+        body.dark-mode #commentInput {
+            background-color: #4a6572;
+            color: #ecf0f1;
+            border-color: #5d7e8b;
+        }
+        body.dark-mode .search-bar input:focus {
+            border-color: #8aff8a;
+        }
+        body.dark-mode .chat-message.ai {
+            background-color: #4a6572;
+            border-color: #5d7e8b;
+        }
+        body.dark-mode .chat-message.user {
+            background-color: #6a964a;
+        }
+        body.dark-mode .close-button {
+            color: #bbb;
+        }
+        body.dark-mode .close-button:hover,
+        body.dark-mode .close-button:focus {
+            color: #fff;
+        }
+        body.dark-mode .video-item .details a,
+        body.dark-mode .recommended-content-section ul li a { /* 추천 컨텐츠 링크 색상 추가 */
+            color: #8aff8a;
+        }
+        body.dark-mode .post-item p,
+        body.dark-mode .post-meta,
+        body.dark-mode #viewPostContent p,
+        body.dark-mode .recommended-content-section p { /* 추천 컨텐츠 설명 색상 추가 */
+            color: #bdc3c7;
+        }
+        body.dark-mode .comment-item strong {
+            color: #ecf0f1;
+        }
+        body.dark-mode #commentsList div[style*="아직 댓글이 없습니다"] {
+            color: #bdc3c7 !important;
+        }
+        body.dark-mode #communityContent div[style*="게시글이 없습니다"] {
+            color: #bdc3c7 !important;
+        }
+
+        /* 상단 바 */
+        .header {
+            background-color: #fff;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .header .top-right-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header .dark-mode-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            outline: none;
+            color: #333; /* Default light mode color */
+            transition: color 0.3s;
+        }
+        body.dark-mode .header .dark-mode-toggle {
+            color: #ecf0f1; /* Dark mode color */
+        }
+
+        /* 메인 컨텐츠 영역 */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 100px 20px 20px;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 검색 섹션 */
+        .search-section {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 800px;
+            margin-bottom: 30px;
+        }
+        .search-section h2 {
+            font-size: 28px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .search-bar input {
+            width: 70%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 18px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .search-bar input:focus {
+            border-color: #4CAF50;
+        }
+        .search-bar button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        .search-bar button:hover {
+            background-color: #45a049;
+        }
+
+        /* 검색 결과 */
+        #searchResults {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .video-item {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+        .video-item:hover {
+            transform: translateY(-5px);
+        }
+        .video-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .video-item .details {
+            padding: 15px;
+        }
+        .video-item .details h3 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+            line-height: 1.4;
+        }
+        .video-item .details p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .video-item .details a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .video-item .details a:hover {
+            text-decoration: underline;
+        }
+
+        /* 추천 컨텐츠 섹션 */
+        .recommended-content-section {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 800px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .recommended-content-section h2 {
+            font-size: 24px;
+            color: #2196F3; /* 파란색 계열로 변경 */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .recommended-content-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .recommended-content-section ul li {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .recommended-content-section ul li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .recommended-content-section ul li a {
+            font-size: 18px;
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .recommended-content-section ul li a:hover {
+            text-decoration: underline;
+        }
+        .recommended-content-section ul li p {
+            font-size: 15px;
+            color: #666;
+            margin: 0;
+        }
+
+
+        /* 플로팅 버튼 */
+        .floating-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+        .floating-buttons button {
+            background-color: #FFC107; /* AI 채팅 버튼 색상 */
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .floating-buttons button:hover {
+            background-color: #FFA000;
+            transform: scale(1.05);
+        }
+        .floating-buttons .community-button {
+            background-color: #2196F3; /* 커뮤니티 버튼 색상 */
+        }
+        .floating-buttons .community-button:hover {
+            background-color: #1976D2;
+        }
+
+        /* 모달 (채팅, 커뮤니티) */
+        .modal {
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            max-height: 80vh;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .modal-header h3 {
+            margin: 0;
+            color: #4CAF50;
+        }
+        .close-button {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        /* 채팅 모달 */
+        #chatBox {
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #e9ebee;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chat-message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+        .chat-message.user {
+            background-color: #DCF8C6;
+            align-self: flex-end;
+        }
+        .chat-message.ai {
+            background-color: #fff;
+            align-self: flex-start;
+            border: 1px solid #eee;
+        }
+        /* AI 메시지 내부의 볼드체 스타일 */
+        .chat-message.ai strong {
+            font-weight: bold;
+            color: #333; /* 다크 모드에서도 잘 보이도록 */
+        }
+        body.dark-mode .chat-message.ai strong {
+            color: #ecf0f1;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-area input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        .chat-input-area button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .chat-input-area button:hover {
+            background-color: #45a049;
+        }
+
+        /* 커뮤니티 모달 */
+        #communityContent {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px; /* 스크롤바 공간 */
+        }
+        .community-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .community-controls .search-input {
+            display: flex;
+            gap: 5px;
+        }
+        .community-controls .search-input input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            width: 200px;
+        }
+        .community-controls .search-input button {
+            background-color: #607D8B;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .community-controls .search-input button:hover {
+            background-color: #455A64;
+        }
+        .community-controls .write-button button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .community-controls .write-button button:hover {
+            background-color: #1976D2;
+        }
+        .post-item {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .post-item:hover {
+            background-color: #f0f0f0;
+        }
+        .post-item h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 18px;
+        }
+        .post-item p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .post-meta {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        /* 글쓰기 모달 */
+        #writePostModal .modal-content {
+            max-width: 700px;
+        }
+        #writePostForm label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        #writePostForm input[type="text"],
+        #writePostForm textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        #writePostForm textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        #writePostForm button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        #writePostForm button:hover {
+            background-color: #45a049;
+        }
+
+        /* 게시물 상세 모달 */
+        #viewPostModal .modal-content {
+            max-width: 700px;
+        }
+        #viewPostContent h3 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        #viewPostContent p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        #viewPostContent .post-meta {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .post-actions button {
+            background-color: #FFC107;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .post-actions button:hover {
+            background-color: #FFA000;
+        }
+        .comments-section {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .comments-section h4 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        .comment-item {
+            background-color: #f0f2f5;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .comment-item strong {
+            color: #333;
+        }
+        .comment-input-area {
+            display: flex;
+            margin-top: 15px;
+        }
+        .comment-input-area input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        .comment-input-area button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .comment-input-area button:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">For better study 📚</div>
+        <div class="top-right-controls">
+            <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+                <span id="darkModeIcon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="search-section">
+            <h2>궁금한 걸 물어 보세요 🧐</h2>
+            <div class="search-bar">
+                <input type="text" id="searchQuery" placeholder="예: 미분 적분 개념, 파이썬 기초">
+                <button onclick="searchYouTube()">검색</button>
+            </div>
+            <div id="searchResults">
+                </div>
+        </section>
+
+        <section class="recommended-content-section">
+            <h2>추천 컨텐츠 🌟</h2>
+            <ul>
+                <li>
+                    <a href="https://www.youtube.com/watch?v=5" target="_blank">효율적인 공부법 가이드</a>
+                    <p>성적을 올리는 데 도움이 되는 다양한 공부 전략을 알려줍니다.</p>
+                </li>
+                <li>
+                    <a href="https://m.blog.naver.com/mindmapmath/221778028801" target="_blank">로그함수, 쉽게 이해하기</a>
+                    <p>복잡하게 느껴지는 로그함수의 개념과 원리를 명확하게 설명합니다.</p>
+                </li>
+                <li>
+                    <a href="https://m.blog.naver.com/PostView.naver?blogId=lagrange0115&logNo=223465686475" target="_blank">가속도 개념 완전 정복</a>
+                    <p>물리학의 기본인 가속도에 대해 자세히 알아보고, 예시를 통해 이해를 돕습니다.</p>
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+    <div class="floating-buttons">
+        <button class="community-button" id="openCommunityModalBtn">📝</button>
+        <button id="openChatModalBtn">🤖</button>
+    </div>
+
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>AI 챗봇 🤖</h3>
+                <span class="close-button" onclick="closeModal('chatModal')">×</span>
+            </div>
+            <div id="chatBox">
+                <div class="chat-message ai">안녕하세요! 무엇을 도와드릴까요?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="질문을 입력하세요...">
+                <button onclick="sendChatMessage()">전송</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="communityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>커뮤니티 📝</h3>
+                <span class="close-button" onclick="closeModal('communityModal')">×</span>
+            </div>
+            <div class="community-controls">
+                <div class="search-input">
+                    <input type="text" id="communitySearchQuery" placeholder="게시글 검색...">
+                    <button onclick="filterCommunityPosts()">검색</button>
+                </div>
+                <div class="write-button">
+                    <button onclick="openWritePostModal()">글쓰기</button>
+                </div>
+            </div>
+            <div id="communityContent">
+                </div>
+        </div>
+    </div>
+
+    <div id="writePostModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>새 글 작성 ✍️</h3>
+                <span class="close-button" onclick="closeModal('writePostModal')">×</span>
+            </div>
+            <form id="writePostForm">
+                <label for="postTitle">제목:</label>
+                <input type="text" id="postTitle" required>
+
+                <label for="postContent">내용:</label>
+                <textarea id="postContent" required></textarea>
+
+                <button type="submit">작성 완료</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="viewPostModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="viewPostTitle"></h3>
+                <span class="close-button" onclick="closeModal('viewPostModal')">×</span>
+            </div>
+            <div id="viewPostContent">
+                <p id="viewPostText"></p>
+                <div class="post-meta" id="viewPostMeta"></div>
+                <div class="post-actions">
+                    <button onclick="likePost()">👍 좋아요 (<span id="likeCount">0</span>)</button>
+                </div>
+                <div class="comments-section">
+                    <h4>댓글</h4>
+                    <div id="commentsList">
+                        </div>
+                    <div class="comment-input-area">
+                        <input type="text" id="commentInput" placeholder="댓글을 입력하세요...">
+                        <button onclick="addComment()">댓글 달기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API 키 (클라이언트 측 노출에 주의)
+        const YOUTUBE_API_KEY = 'AIzaSyDWWpj_4HbIoKFRvBHrCWGhye5GsJp_MFQ';
+        // API 키는 절대 공개적으로 노출되면 안 됩니다! 이 예제는 학습용입니다.
+        const GEMINI_API_KEY = 'AIzaSyAP3d3CImySJbCqtUx0LPEp0C7B8IjAIBI';
+        
+        const GEMINI_MODEL_NAME = 'gemini-1.5-flash'; 
+
+        // RAG 기능을 위한 시스템 프롬프트 (고등학생 수준 설명)
+        // AI에게 마크다운 볼드체 대신 HTML <strong> 태그를 사용하도록 명시적으로 지시합니다.
+        const SYSTEM_PROMPT_FOR_HIGH_SCHOOL = `당신은 고등학생을 위한 친절하고 명확한 과외 선생님입니다. 고등학생이 핵심 개념을 쉽게 이해할 수 있도록 복잡한 용어는 피하고, 친숙한 비유나 예시를 들어 간결하고 명확하게 설명해주세요. 마치 친구에게 설명해주듯 편안한 어조로 답변해주세요. 불필요한 전문 용어는 최소화하고, 모든 설명은 고등학생이 이해할 수 있는 수준으로 해주세요. 중요한 단어는 <strong>볼드체</strong>로 강조할 수 있습니다.`;
+
+        // 모달 열기/닫기 함수
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // 다크 모드 토글
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('darkModeIcon');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.textContent = '☀️'; // 다크 모드일 때 햇님 아이콘
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                icon.textContent = '🌙'; // 라이트 모드일 때 달님 아이콘
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        // 페이지 로드 시 다크 모드 설정 적용
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                toggleDarkMode(); // 다크 모드 활성화 (토글 함수로 아이콘도 변경)
+            }
+        });
+
+        // AI 채팅 모달 열기
+        document.getElementById('openChatModalBtn').addEventListener('click', () => {
+            openModal('chatModal');
+        });
+
+        // 커뮤니티 모달 열기
+        document.getElementById('openCommunityModalBtn').addEventListener('click', () => {
+            openModal('communityModal');
+            loadCommunityPosts(); // 커뮤니티 모달 열 때 게시물 목록 로드
+        });
+
+        // 엔터 키로 검색 실행
+        document.getElementById('searchQuery').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                searchYouTube();
+            }
+        });
+
+        /**
+         * YouTube API를 사용하여 동영상을 검색하고 결과를 표시합니다.
+         */
+        async function searchYouTube() {
+            const query = document.getElementById('searchQuery').value;
+            const searchResultsDiv = document.getElementById('searchResults');
+            searchResultsDiv.innerHTML = '<div>검색 중...</div>';
+
+            if (!query) {
+                searchResultsDiv.innerHTML = '<div>검색어를 입력해주세요.</div>';
+                return;
+            }
+
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=10&key=${YOUTUBE_API_KEY}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                searchResultsDiv.innerHTML = ''; // 기존 결과 지우기
+
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(item => {
+                        const videoId = item.id.videoId;
+                        const title = item.snippet.title;
+                        const description = item.snippet.description;
+                        const thumbnailUrl = item.snippet.thumbnails.high.url;
+
+                        const videoHtml = `
+                            <div class="video-item">
+                                <img src="${thumbnailUrl}" alt="${title}">
+                                <div class="details">
+                                    <h3>${title}</h3>
+                                    <p>${description.substring(0, 100)}${description.length > 100 ? '...' : ''}</p>
+                                    <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">영상 보러가기</a>
+                                </div>
+                            </div>
+                        `;
+                        searchResultsDiv.innerHTML += videoHtml;
+                    });
+                } else {
+                    searchResultsDiv.innerHTML = '<div>검색 결과가 없습니다.</div>';
+                }
+            } catch (error) {
+                console.error('YouTube 검색 중 오류 발생:', error);
+                searchResultsDiv.innerHTML = '<div>검색 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</div>';
+            }
+        }
+
+        /**
+         * Gemini API를 사용하여 AI 챗봇 메시지를 전송하고 응답을 받습니다.
+         */
+        async function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const chatBox = document.getElementById('chatBox');
+            const userMessage = chatInput.value.trim();
+
+            if (!userMessage) return;
+
+            // 사용자 메시지 표시
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.classList.add('chat-message', 'user');
+            userMsgDiv.textContent = userMessage;
+            chatBox.appendChild(userMsgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // 스크롤 하단으로
+
+            chatInput.value = ''; // 입력창 비우기
+
+            // AI 응답 대기 메시지
+            const aiLoadingDiv = document.createElement('div');
+            aiLoadingDiv.classList.add('chat-message', 'ai');
+            aiLoadingDiv.textContent = 'AI가 답변을 생성 중입니다...';
+            chatBox.appendChild(aiLoadingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // RAG (고등학생 수준) 프롬프트를 사용자 메시지 앞에 추가하여 전송
+            const fullPrompt = SYSTEM_PROMPT_FOR_HIGH_SCHOOL + "\n\n질문: " + userMessage;
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
+            const requestBody = {
+                contents: [{
+                    parts: [{
+                        text: fullPrompt // 시스템 프롬프트와 사용자 질문을 합쳐서 보냄
+                    }]
+                }]
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                const data = await response.json();
+
+                // AI 응답 대기 메시지 제거
+                chatBox.removeChild(aiLoadingDiv);
+
+                let aiResponseText = '죄송합니다. 답변을 생성할 수 없습니다.';
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+                    aiResponseText = data.candidates[0].content.parts[0].text;
+                } else if (data.error) {
+                    aiResponseText = `오류 발생: ${data.error.message || '알 수 없는 오류'}. API 키, 모델 이름, 권한을 다시 확인해주세요.`;
+                    console.error('Gemini API Error:', data.error);
+                } else {
+                    console.error('Gemini API 응답 형식 오류:', data);
+                    aiResponseText = 'AI 응답을 처리하는 데 문제가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.';
+                }
+
+                // AI 응답 메시지 표시 (innerHTML 사용)
+                const aiMsgDiv = document.createElement('div');
+                aiMsgDiv.classList.add('chat-message', 'ai');
+                aiMsgDiv.innerHTML = aiResponseText; // <--- 이 부분이 변경되었습니다!
+                chatBox.appendChild(aiMsgDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+            } catch (error) {
+                console.error('Gemini API 호출 중 네트워크 오류 발생:', error);
+                chatBox.removeChild(aiLoadingDiv); // 오류 시 로딩 메시지 제거
+                const errorMsgDiv = document.createElement('div');
+                errorMsgDiv.classList.add('chat-message', 'ai');
+                errorMsgDiv.textContent = 'AI 챗봇과 연결하는 데 문제가 발생했습니다. 네트워크 연결을 확인하거나 API 키를 확인해주세요.';
+                chatBox.appendChild(errorMsgDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        // 엔터 키로 채팅 메시지 전송
+        document.getElementById('chatInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+        // 커뮤니티 기능 (데이터는 페이지 새로고침 시 초기화됨)
+        let posts = [
+            { id: 1, title: '미분이 너무 어려워요 ㅜㅜ', content: '수학 포기해도 되나요?', author: '익명', likes: 0, comments: [] }
+        ];
+        let currentViewedPost = null; // 현재 보고 있는 게시물 데이터
+
+        // 게시물 목록을 화면에 렌더링하는 함수
+        function loadCommunityPosts(filterQuery = '') {
+            const communityContent = document.getElementById('communityContent');
+            communityContent.innerHTML = ''; // 기존 게시물 지우기
+
+            const filteredPosts = posts.filter(post =>
+                post.title.toLowerCase().includes(filterQuery.toLowerCase()) ||
+                post.content.toLowerCase().includes(filterQuery.toLowerCase())
+            );
+
+            if (filteredPosts.length === 0) {
+                communityContent.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">게시글이 없습니다.</div>';
+                return;
+            }
+
+            filteredPosts.forEach(post => {
+                const postItem = document.createElement('div');
+                postItem.classList.add('post-item');
+                postItem.onclick = () => viewPost(post.id); // ID로 게시물 찾기
+                postItem.innerHTML = `
+                    <h4>${post.title}</h4>
+                    <p>${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}</p>
+                    <div class="post-meta">작성자: ${post.author} | 좋아요: ${post.likes}</div>
+                `;
+                communityContent.appendChild(postItem);
+            });
+        }
+
+        // 커뮤니티 게시글 검색
+        function filterCommunityPosts() {
+            const query = document.getElementById('communitySearchQuery').value;
+            loadCommunityPosts(query);
+        }
+
+        // 엔터 키로 커뮤니티 게시글 검색
+        document.getElementById('communitySearchQuery').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                filterCommunityPosts();
+            }
+        });
+
+        // 새 글 작성 모달 열기
+        function openWritePostModal() {
+            openModal('writePostModal');
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+        }
+
+        // 새 글 작성 폼 제출 처리
+        document.getElementById('writePostForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+
+            if (!title || !content) {
+                alert('제목과 내용을 모두 입력해주세요.');
+                return;
+            }
+
+            const newPost = {
+                id: posts.length > 0 ? Math.max(...posts.map(p => p.id)) + 1 : 1, // 간단한 ID 생성
+                title: title,
+                content: content,
+                author: '익명', // 실제로는 로그인한 사용자 이름
+                likes: 0,
+                comments: []
+            };
+
+            posts.push(newPost); // 게시물 배열에 추가
+            loadCommunityPosts(); // 게시물 목록 새로고침
+            closeModal('writePostModal'); // 글쓰기 모달 닫기
+            alert('게시글이 성공적으로 작성되었습니다!');
+        });
+
+        // 게시물 상세 보기
+        function viewPost(postId) {
+            currentViewedPost = posts.find(p => p.id === postId);
+            if (!currentViewedPost) {
+                alert('게시글을 찾을 수 없습니다.');
+                return;
+            }
+
+            document.getElementById('viewPostTitle').textContent = currentViewedPost.title;
+            document.getElementById('viewPostText').textContent = currentViewedPost.content;
+            document.getElementById('viewPostMeta').textContent = `작성자: ${currentViewedPost.author} | 좋아요: ${currentViewedPost.likes}`;
+            document.getElementById('likeCount').textContent = currentViewedPost.likes;
+
+            const commentsList = document.getElementById('commentsList');
+            commentsList.innerHTML = ''; // 기존 댓글 지우기
+
+            if (currentViewedPost.comments && currentViewedPost.comments.length > 0) {
+                currentViewedPost.comments.forEach(comment => {
+                    const commentDiv = document.createElement('div');
+                    commentDiv.classList.add('comment-item');
+                    commentDiv.innerHTML = `<strong>${comment.author}:</strong> ${comment.text}`;
+                    commentsList.appendChild(commentDiv);
+                });
+            } else {
+                // 댓글이 없을 때 알림 표시
+                const noCommentsDiv = document.createElement('div');
+                noCommentsDiv.id = 'noCommentsAlert'; // ID 추가
+                noCommentsDiv.style.cssText = 'color: #666; font-size: 14px; text-align: center; padding: 10px 0;';
+                noCommentsDiv.textContent = '아직 댓글이 없습니다.';
+                commentsList.appendChild(noCommentsDiv);
+            }
+            document.getElementById('commentInput').value = ''; // 댓글 입력창 초기화
+            openModal('viewPostModal');
+        }
+
+        // 좋아요 기능
+        function likePost() {
+            if (!currentViewedPost) return;
+
+            currentViewedPost.likes++;
+            document.getElementById('likeCount').textContent = currentViewedPost.likes;
+            document.getElementById('viewPostMeta').textContent = `작성자: ${currentViewedPost.author} | 좋아요: ${currentViewedPost.likes}`;
+            alert('게시물에 좋아요를 눌렀습니다!');
+            loadCommunityPosts(); // 좋아요 수 업데이트를 위해 목록 새로고침
+        }
+
+        // 댓글 추가 기능
+        function addComment() {
+            if (!currentViewedPost) return;
+
+            const commentInput = document.getElementById('commentInput');
+            const commentText = commentInput.value.trim();
+
+            if (!commentText) {
+                alert('댓글 내용을 입력해주세요.');
+                return;
+            }
+
+            const newComment = { author: '익명', text: commentText }; // '익명'은 실제로는 로그인 정보로 대체
+            if (!currentViewedPost.comments) {
+                currentViewedPost.comments = [];
+            }
+            currentViewedPost.comments.push(newComment);
+
+            const commentsList = document.getElementById('commentsList');
+            // '아직 댓글이 없습니다' 알림 제거
+            const noCommentsAlert = document.getElementById('noCommentsAlert');
+            if (noCommentsAlert) {
+                commentsList.removeChild(noCommentsAlert);
+            }
+
+            const commentDiv = document.createElement('div');
+            commentDiv.classList.add('comment-item');
+            commentDiv.innerHTML = `<strong>${newComment.author}:</strong> ${newComment.text}`;
+            commentsList.appendChild(commentDiv);
+            commentInput.value = ''; // 입력창 비우기
+            alert('댓글이 성공적으로 추가되었습니다!');
+        }
+
+        // 엔터 키로 댓글 전송
+        document.getElementById('commentInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                addComment();
+            }
+        });
+
+        // 페이지 로드 시 초기 커뮤니티 게시물 로드
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCommunityPosts();
+        });
+    </script>
+</body>
+</html>
